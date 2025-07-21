@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="en">
+<!--
+***********************************************************
+* Posterr - Your home media display                       *
+* Developed by Matt Petersen - Brisbane, Australia        *
+***********************************************************
+-->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-control" content="public">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Additional js libs -->
+  <!-- <script src="<%=baseUrl%>/js/jquery-3.3.1.slim.min.js"></script> -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <!-- <script src="<%=baseUrl%>/js/bootstrap-colourpicker.min.js"></script> -->
+  <script src="/js/iro.min.js"></script>
+
+  <!--- CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="<%=baseUrl%>/css/settings-styles.css">
+  <link rel="stylesheet" href="<%=baseUrl%>/css/light.min.css">
+  <link rel="stylesheet" href="<%=baseUrl%>/css/font-awesome.min.css">
+  <!-- <link rel="stylesheet" href="<%=baseUrl%>/css/bootstrap-colourpicker.min.css"> -->
+  <!-- <script src="/js/script.js"></script> -->
+
+  <title>Posterr - Settings</title>
+  <link rel="shortcut icon" type="image/png" href="<%=baseUrl%>/favicons/favicon.ico" />
+</head>
+
+<body>
+
+  <%if(!user.valid){%><script language='javascript'>
+    window.location.href = '<%=baseUrl%>/logon';
+  </script>%><%}%>
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="main-breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<%=baseUrl%>/">Posterr</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Posterr Settings</li>
+  </ol>
+  </nav>
+  <%if(typeof formData !== 'undefined' && formData.saved == true) {%><script language='javascript'>
+    alert("Posterr Settings Saved. Please allow a few seconds for Posterr to restart.");
+  </script><%}%>
+    <!-- Layout -->
+    <div class="row gutters-sm">
+      <!-- Side Menu View -->
+      <div class="col-md-4 d-none d-md-block">
+        <div class="card">
+          <div class="card-body">
+            <nav class="nav flex-column nav-pills nav-gap-y-1">
+              <a href="#settings" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">
+                <i class="fal fa-cog"></i><span class="menu">Settings</span>
+              </a>
+              <a href="<%=baseUrl%>/debug" class="nav-item nav-link has-icon nav-link-faded">
+  <i class="fal fa-debug"></i><span class="menu">Debug</span>
+  </a>
+  <a href="#about" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+    <i class="fal fa-person-sign"></i><span class="menu">About</span>
+  </a>
+  </nav>
+  </div>
+  </div>
+  </div>
+
+
+  <div class="col-md-8">
+    <div class="card">
+      <!-- Mobile Menu View -->
+      <div class="card-header border-bottom mb-3 d-flex d-md-none">
+        <ul class="nav nav-tabs card-header-tabs nav-gap-x-1" role="tablist">
+          <li class="nav-item">
+            <a href="#settings" data-toggle="tab" class="nav-link has-icon active"><i class="fal fa-cog"></i>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle></svg>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/debug" class="nav-link has-icon"><i class="fal fa-debug"></i>
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#about" data-toggle="tab" class="nav-link has-icon"><i class="fal fa-person-sign"></i>
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+      <% if(latestVersion !== undefined && latestVersion !== "" && latestVersion !== version.toString() && (typeof errors == 'undefined' || errors.length == 0) && updateAvailable == true){%>
+      <p id="rcorners-u"><span id="message">Update</span><br>Please upgrade to Posterr v<%=latestVersion%></br>
+      <%}%>
+
+                  <!-- show validation errors -->
+                  <% 
+              if(typeof errors !== 'undefined' && errors.length > 0){
+                // display validation errors
+                %><p id="rcorners-e"><span id="message">Validation errors</span><br><%
+                errors.forEach(function(e) { %>
+                  <%=e.msg %></br>
+                  <%});%></p>
+                  <%}%>
+
+
+      <!-- Tab Content -->
+      <div class="card-body tab-content">
+
+        <!-- General Settings -->
+        <div class="tab-pane active" id="settings">
+
+
+          <div class="panel-group accordion" id="accordion" name="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                    aria-expanded="false" aria-controls="collapseOne">
+                    GENERAL SETTINGS <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+
+              <form method="POST" action="<%=baseUrl%>/settings">
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                      aria-describedby="password" placeholder="Enter a password"
+                      value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.password%>" <%}else{%><%=settings.password%>"<%}%>>
+                  <small id="passwordHelp" class="form-text text-muted">Enter a password to secure this page</small>
+                </div>
+                <div class="form-group">
+                  <label for="slideDuration">Slide Duration</label>
+                  <input type="text" class="form-control" id="slideDuration" name="slideDuration" aria-describedby="slideDuration"
+                    placeholder="Suggest no less than 5 and no more than 20-30 seconds" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.slideDuration%>"<%}else{%><%=settings.slideDuration%>"<%}%>>
+                  <small id="slideDurationHelp" class="form-text text-muted">How many seconds that each slide will
+                    remain on the screen</small>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="artSwitch" id="artSwitch" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.artSwitch ? 'checked' : '' %><%}else{%><%=(settings.hasArt == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="artSwitch">Enable background artwork</label>
+                    <small id="themeHelp" class="form-text text-muted">Shows background art (if available)</small>
+                  </div>
+                </div>
+
+                <label class="d-block">Theme Options</label>
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="themeSwitch" id="themeSwitch" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.themeSwitch ? 'checked' : '' %><%}else{%><%=(settings.playThemes == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="themeSwitch">TV themes</label>
+                    <small id="themeHelp" class="form-text text-muted">Enables TV theme (if available)</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="genericSwitch" id="genericSwitch" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.genericSwitch ? 'checked' : '' %><%}else{%><%=(settings.genericThemes == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="genericSwitch">Movie themes</label>
+                    <small id="randomThemeHelp" class="form-text text-muted">Enables movie themes (if available)</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableCustomPictureThemes" id="enableCustomPictureThemes" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableCustomPictureThemes ? 'checked' : '' %><%}else{%><%=(settings.enableCustomPictureThemes == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableCustomPictureThemes">Custom picture themes</label>
+                    <small id="enableCustomPictureThemesHelp" class="form-text text-muted">Enables custom picture themes (if available)</small>
+                  </div>
+                </div>
+
+                
+                <label class="d-block">Slide Transitions</label>
+                <div class="form-group">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="fadeOption" id="slideRadio" value="false" 
+                    <% if(typeof formData !== 'undefined' && errors){%><%=(formData.fadeOption=='false') ? 'checked' : '' %><%}else{%><%=(settings.fade == 'false') ? 'checked' : '' %><%}%>>
+                    <label class="form-check-label" for="slideRadio">Slide</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="fadeOption" id="fadeOption" value="true" 
+                    <% if(typeof formData !== 'undefined' && errors){%><%=(formData.fadeOption=='true') ? 'checked' : '' %><%}else{%><%=(settings.fade == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="form-check-label" for="fadeRadio">Fade</label>
+                  </div>
+                  <small id="fadeRadioHelp" class="form-text text-muted">The transition effect for when slides
+                    change</small>
+                  <div class="form-group small text-muted">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="shuffleSwitch" id="shuffleSwitch"
+                     value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.shuffleSwitch ? 'checked' : '' %><%}else{%><%=(settings.shuffleSlides == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="shuffleSwitch">Shuffle slides</label>
+                    <small id="suffleSwitchHelp" class="form-text text-muted">Shuffles on-demand, coming soon (radar) & coming soon (Sonarr)</small>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="hideSettingsLinks" id="hideSettingsLinks"
+                     value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.hideSettingsLinks ? 'checked' : '' %><%}else{%><%=(settings.hideSettingsLinks == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="hideSettingsLinks">Remove settings links</label>
+                    <small id="hideSettingsLinksHelp" class="form-text text-muted">Removes all settings links. (You must type in /settings)</small>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="theaterRoomMode" id="theaterRoomMode"
+                     value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.theaterRoomMode ? 'checked' : '' %><%}else{%><%=(settings.theaterRoomMode == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="theaterRoomMode">Theatre room mode</label>
+                    <small id="theaterRoomModeHelp" class="form-text text-muted">Posterr sleeps whenever anything playing (Requires 'Now Screening' enabled)</small>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+
+                <div class="panel panel-default">
+                  <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                      <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        SLEEP TIMER <i class="accordion_icon fal fa-plus"></i>
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableSleep" id="enableSleep" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableSleep ? 'checked' : '' %><%}else{%><%=(settings.enableSleep == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableSleep">Enable sleep timer</label>
+                    <small id="enableSleepHelp" class="form-text text-muted">Blanks screen and suspends all background tasks</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="sleepStart">Sleep start time</label>
+                  <input type="text" class="form-control" id="sleepStart" name="sleepStart" aria-describedby="sleepStart"
+                    placeholder="23:00 (military time)" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.sleepStart%>"<%}else{%><%=settings.sleepStart%>"<%}%>>
+                  <small id="sleepStartHelp" class="form-text text-muted">The time to put Posterr to sleep</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="sleepEnd">Sleep end time</label>
+                  <input type="text" class="form-control" id="sleepEnd" name="sleepEnd" aria-describedby="sleepEnd"
+                    placeholder="07:00 (military time)" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.sleepEnd%>"<%}else{%><%=settings.sleepEnd%>"<%}%>>
+                  <small id="sleepEndHelp" class="form-text text-muted">The time to wake Posterr up</small>
+                </div>
+
+                </div>
+              </div>
+            </div>
+            <hr>
+
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingUI">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseUI" aria-expanded="false" aria-controls="collapseUI">
+                    UI CUSTOMISATION <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseUI" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUI">
+                <div class="panel-body">
+
+                  <h6>Screen Orientation</h6>
+                  <div class="form-group">
+                    <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                      <input type="checkbox" class="custom-control-input" name="rotate" id="rotate" aria-describedby="rotateHelp"
+                        value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.rotate ? 'checked' : '' %><%}else{%><%=(settings.rotate == 'true') ? 'checked' : '' %><%}%>>
+                      <label class="custom-control-label" for="rotate">Rotate screen</label>
+                      <small id="themeHelp" class="form-text text-muted">Rotate screen orientation -90 degrees (ideal for Amazon Firestick devices)</small>
+                    </div>
+                  </div>
+
+                  <h6>Colours</h6>
+                  <div class="form-group">
+                    &nbsp;&nbsp;<input type="color" value="#FAFAD2" id="colourWellTitle">
+                    <label for="titleColour">&nbsp;&nbsp;Title </label>
+                    &nbsp;<span id="titleHex" name="titleHex"></span>
+                    <input type="text" class="form-control" id="titleColour" style="display: none;" name="titleColour" aria-describedby="titleColourHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.titleColour%>"<%}else{%><%=settings.titleColour%>"<%}%>>
+                    <small id="titleColourHelp" class="form-text text-muted">&nbsp;&nbsp;Set the colour for the slide title</small>
+                  </div>
+                  <div class="form-group">
+                  &nbsp;&nbsp;<input type="color" value="#FAFAD2" id="colourWellFoot">
+                  <label for="footColour">&nbsp;&nbsp;Tagline </label>
+                  &nbsp;<span id="footHex" name="footHex"></span>
+                  <input type="text" class="form-control" id="footColour" style="display: none;" name="footColour" aria-describedby="footColourHelp"
+                    placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.footColour%>"<%}else{%><%=settings.footColour%>"<%}%>>
+                  <small id="footColourHelp" class="form-text text-muted">&nbsp;&nbsp;Set the colour for the slide tagline</small>
+                </div>
+                <div class="form-group">
+                &nbsp;&nbsp;<input type="color" value="#000000" id="colourWellBg">
+                <label for="bgColour">&nbsp;&nbsp;Background </label>
+                &nbsp;<span id="bgHex" name="bgHex"></span>
+                <input type="text" class="form-control" id="bgColour" style="display: none;" name="bgColour" aria-describedby="bgColourHelp"
+                  placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.bgColour%>"<%}else{%><%=settings.bgColour%>"<%}%>>
+                <small id="bgColourHelp" class="form-text text-muted">&nbsp;&nbsp;Set background colour (Not appied if background art enabled)</small>
+              </div>
+                &nbsp;&nbsp;<button type="button" class="btn btn-info" onclick="resetColours();">Reset colours</button> 
+              </br></br>
+  
+                  <script lang=javascript>
+                    var colourWellTitle;
+                    var colourWellFoot;
+                    var colourWellBg;
+                    var defaultTitlecolour = "<% if(typeof formData !== 'undefined' && errors){%><%=formData.titleColour%>"<%}else{%><%=settings.titleColour%>"<%}%>;
+                    var defaultFootcolour = "<% if(typeof formData !== 'undefined' && errors){%><%=formData.footColour%>"<%}else{%><%=settings.footColour%>"<%}%>;
+                    var defaultBgcolour = "<% if(typeof formData !== 'undefined' && errors){%><%=formData.bgColour%>"<%}else{%><%=settings.bgColour%>"<%}%>;
+  
+                    // set defaults if nothing saved
+                    if(defaultTitlecolour == "") {defaultTitlecolour = "#FAFAD2"};
+                    if(defaultFootcolour == "") {defaultFootcolour = "#FAFAD2"};
+                    if(defaultBgcolour == "") {defaultBgcolour = "#000000"};
+                    titleCol = document.querySelector("#titleColour");
+                    titleCol.value = defaultTitlecolour;
+                    footCol = document.querySelector("#footColour");
+                    footCol.value = defaultFootcolour;
+                    bgCol = document.querySelector("#bgColour");
+                    bgCol.value = defaultBgcolour;
+                    
+                    window.addEventListener("load", startup, false);
+  
+                    function startup() {
+  
+                    $('.panel-title > a').click(function() {
+                    $(this).find('i').toggleClass('fa-plus fa-minus')
+                      .closest('panel').siblings('panel')
+                      .find('i')
+                      .removeClass('fa-minus').addClass('fa-plus');
+                    });
+  
+                    colourWellTitle = document.querySelector("#colourWellTitle");
+                    colourWellTitle.value = defaultTitlecolour;
+                    colourWellTitle.addEventListener("input", updateFirst, false);
+                    colourWellTitle.addEventListener("change", updateAll, false);
+  
+                    colourWellFoot = document.querySelector("#colourWellFoot");
+                    colourWellFoot.value = defaultFootcolour;
+                    colourWellFoot.addEventListener("input", updateFirstFoot, false);
+                    colourWellFoot.addEventListener("change", updateAllFoot, false);
+  
+                    colourWellBg = document.querySelector("#colourWellBg");
+                    colourWellBg.value = defaultBgcolour;
+                    colourWellBg.addEventListener("input", updateFirstBg, false);
+                    colourWellBg.addEventListener("change", updateAllBg, false);
+  
+                    var th = document.getElementById("titleHex");
+                    th.innerText = "(" + defaultTitlecolour + ")";  
+                    var fh = document.getElementById("footHex");
+                    fh.innerText = "(" + defaultFootcolour + ")";  
+                    var bh = document.getElementById("bgHex");
+                    bh.innerText = "(" + defaultBgcolour + ")";  
+                  }
+  
+                  function resetColours() {
+                    colourWellTitle = document.querySelector("#colourWellTitle");
+                    colourWellTitle.value = "#FAFAD2";
+                    colourWellFoot = document.querySelector("#colourWellFoot");
+                    colourWellFoot.value = "#FAFAD2";
+                    colourWellBg = document.querySelector("#colourWellBg");
+                    colourWellBg.value = "#000000";
+  
+                    var tc = document.getElementById("titleColour");
+                    tc.value = "#FAFAD2";
+                    var th = document.getElementById("titleHex");
+                    th.innerText = "(#FAFAD2)"; 
+  
+                    var fc = document.getElementById("footColour");
+                    fc.value = "#FAFAD2"
+                    var fh = document.getElementById("footHex");
+                    fh.innerText = "(#FAFAD2)";  
+  
+                    var bc = document.getElementById("bgColour");
+                    bc.value = "#000000";
+                    var bh = document.getElementById("bgHex");
+                    bh.innerText = "(#000000)";                
+                  }
+  
+                  function updateFirst(event) {
+                    var tc = document.getElementById("titleColour");
+                    tc.value = event.target.value;
+                    var th = document.getElementById("titleHex");
+                    th.innerText = "(" + event.target.value + ")";                
+                  }
+  
+                  function updateFirstFoot(event) {
+                    var fc = document.getElementById("footColour");
+                    fc.value = event.target.value;
+                    var fh = document.getElementById("footHex");
+                    fh.innerText = "(" + event.target.value + ")";                
+                  }
+  
+                  function updateFirstBg(event) {
+                    var bc = document.getElementById("bgColour");
+                    bc.value = event.target.value;
+                    var bh = document.getElementById("bgHex");
+                    bh.innerText = "(" + event.target.value + ")";                
+                  }
+  
+                  function updateAll(event) {
+                    var tc = document.getElementById("titleColour");
+                    tc.value = event.target.value;
+                    var th = document.getElementById("titleHex");
+                    th.innerText = "(" + event.target.value + ")";                
+                  };
+  
+                  function updateAllFoot(event) {
+                    var fc = document.getElementById("footColour");
+                    fc.value = event.target.value;
+                    var fh = document.getElementById("footHex");
+                    fh.innerText = "(" + event.target.value + ")";                
+                  };
+  
+                  function updateAllBg(event) {
+                    var bc = document.getElementById("bgColour");
+                    bc.value = event.target.value;
+                    var bh = document.getElementById("bgHex");
+                    bh.innerText = "(" + event.target.value + ")";                
+                  };
+  
+                </script>
+  
+                    <div class="form-group">
+                    <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Title Font</label>
+                    <select class="custom-select my-1 mr-sm-2" id="titleFont" name="titleFont">
+                      <option value="" selected>Default</option>
+                      <option value="broadwayregular" style="font-family: 'broadwayregular';">Broadway</option>
+                      <option value="carnival_centenaryregular" style="font-family: 'carnival_centenaryregular';">Carnival Centenary</option>
+                      <option value="emerald_greyregular" style="font-family: 'emerald_greyregular';">Emerald Grey</option>
+                      <option value="great_attractionregular" style="font-family: 'great_attractionregular';">Great Attraction</option>
+                      <option value="hangar_nineregular" style="font-family: 'hangar_nineregular';">Hangar Nine</option>
+                      <option value="inepticregular" style="font-family: 'inepticregular';">Ineptic</option>
+                      <option value="joyful_theatreregular" style="font-family: 'joyful_theatreregular';">Joyful Theatre</option>
+                      <option value="laconicaregular" style="font-family: 'laconicaregular';">Laconica</option>
+                      <option value="limelightregular" style="font-family: 'limelightregular';">Limelight</option>
+                      <option value="midnight_championregular" style="font-family: 'midnight_championregular';">Midnight Champion</option>
+                      <option value="montserratthin" style="font-family: 'montserratthin';">Montserrat</option>   
+                      <option value="moulinrougeflfregular" style="font-family: 'moulinrougeflfregular';">Moulinrouge Flf</option>       
+                      <option value="movie_timesregular" style="font-family: 'movie_timesregular';">Movie Times</option>
+                      <option value="open_sansregular" style="font-family: 'open_sansregular';">Open Sans</option>
+                      <option value="r1999regular" style="font-family: 'r1999regular';">R1999</option>  
+                      <option value="reach_the_endregular" style="font-family: 'reach_the_endregular';">Reach The End</option>
+                      <option value="riemann_theatreregular" style="font-family: 'riemann_theatreregular';">Riemann Theatre</option>
+                      <option value="showtimenormal" style="font-family: 'showtimenormal';">Showtime</option>
+                      <option value="style_thiefregular" style="font-family: 'style_thiefregular';">Style Thief</option>
+                    </select>
+                  </div>
+                  <script lang='javascript'>
+                    // set pre-selected or saved font
+                    var fontDD = document.getElementById("titleFont");
+                  <%
+                    if(typeof formData !== 'undefined' && errors){%> fontDD.value='<%=formData.titleFont%>' ;<%
+                    }
+                    else{%> fontDD.value='<%=settings.custBrand%>' ;<%
+                    }
+                  %> </script> <div class="form-group">
+                    <label for="comingSoon">Coming Soon (Alternate text)</label>
+                    <input type="text" class="form-control" id="comingSoon" name="comingSoon"
+                      aria-describedby="comingSoonHelp" placeholder="Leave blank for default"
+                      value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.comingSoon%>"
+                      <%}else{%><%=settings.comingSoon%>"<%}%>>
+                    <small id="comingSoonHelp" class="form-text text-muted">Alternate text for 'Coming Soon'</small>
+                  </div>
+  
+                  <div class="form-group">
+                    <label for="nowScreening">Now Screening (Alternate text)</label>
+                    <input type="text" class="form-control" id="nowScreening" name="nowScreening" aria-describedby="nowScreeningHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.nowScreening%>"<%}else{%><%=settings.nowScreening%>"<%}%>>
+                    <small id="nowScreeningHelp" class="form-text text-muted">Alternate text for 'Now Screening'</small>
+                  </div>
+  
+                  <div class="form-group">
+                    <label for="onDemand">On-demand (Alternate text)</label>
+                    <input type="text" class="form-control" id="onDemand" name="onDemand" aria-describedby="onDemandHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.onDemand%>"<%}else{%><%=settings.onDemand%>"<%}%>>
+                    <small id="onDemandHelp" class="form-text text-muted">Alternate text for 'On-demand'</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="recentlyAdded">Recently Added (Alternate text)</label>
+                    <input type="text" class="form-control" id="recentlyAdded" name="recentlyAdded" aria-describedby="recentlyAddedHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.recentlyAdded%>"<%}else{%><%=settings.recentlyAdded%>"<%}%>>
+                    <small id="recentlyAddedHelp" class="form-text text-muted">Alternate text for 'Recently Added'</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="playing">Playing (Alternate text)</label>
+                    <input type="text" class="form-control" id="playing" name="playing" aria-describedby="playingHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.playing%>"<%}else{%><%=settings.playing%>"<%}%>>
+                    <small id="playingHelp" class="form-text text-muted">Alternate text for 'Playing' (music)</small>
+                  </div>
+  
+                  <!-- <div class="form-group">
+                    <label for="iframe">Iframe (Alternate text)</label>
+                    <input type="text" class="form-control" id="iframe" name="iframe" aria-describedby="iframeHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.iframe%>"<%}else{%><%=settings.iframe%>"<%}%>>
+                    <small id="iframeHelp" class="form-text text-muted">Alternate text for 'Iframe'</small>
+                  </div> -->
+  
+                  <div class="form-group">
+                    <label for="picture">E-Book Release (Alternate text)</label>
+                    <input type="text" class="form-control" id="ebook" name="ebook" aria-describedby="ebookHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.ebook%>"<%}else{%><%=settings.ebook%>"<%}%>>
+                    <small id="ebookHelp" class="form-text text-muted">Alternate text for 'E-Book Release'</small>
+                  </div>
+  
+                  <div class="form-group">
+                    <label for="trivia">Trivia Question (Alternate text)</label>
+                    <input type="text" class="form-control" id="trivia" name="trivia" aria-describedby="triviaHelp"
+                      placeholder="Leave blank for default" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.trivia%>"<%}else{%><%=settings.trivia%>"<%}%>>
+                    <small id="triviaHelp" class="form-text text-muted">Alternate text for 'Trivia Questions'</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingThree">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    PLEX <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="plexHTTPSSwitch" id="plexHTTPSSwitch"
+                     value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.plexHTTPSSwitch ? 'checked' : '' %><%}else{%><%=(settings.plexHTTPS == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="plexHTTPSSwitch">HTTPS Connection</label>
+                    <small id="plexHTTPSHelp" class="form-text text-muted">Enable if Plex requires a HTTPS 'secure'
+                      connection.</small>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="plexIP">Server IP or Domain Name</label>
+                  <input type="text" class="form-control" id="plexIP" name="plexIP" aria-describedby="plexIPHelp"
+                    placeholder="n.n.n.n" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.plexIP%>"<%}else{%><%=settings.plexIP%>"<%}%>>
+                  <small id="plexIPHelp" class="form-text text-muted">Enter the Plex IP or Domain Name.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="plexIP">Server Port</label>
+                  <input type="text" class="form-control" id="plexIPort" name="plexPort" aria-describedby="plexPortHelp"
+                    placeholder="usually port 32400" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.plexPort%>"<%}else{%><%=settings.plexPort%>"<%}%>>
+                  <small id="plexPortHelp" class="form-text text-muted">Enter the server port. (usually 32400).</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="plexToken">Plex Token</label>
+                  <input type="password" class="form-control" name="plexToken" id="plexToken" aria-describedby="plexToken"
+                    placeholder="Plex Token" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.plexToken%>"<%}else{%><%=settings.plexToken%>"<%}%>>
+                  <small id="plexTokenHelp" class="form-text text-muted">Needed to communicate with your Plex server.
+                    (<a href="https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/"
+                      target="_blank">details</a>)</small>
+                </div>
+                  
+                </div>
+              </div>
+            </div>
+            <hr>
+
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingFour">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    CUSTOM PICTURES <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableCustomPictures" id="enableCustomPictures" aria-describedby="enableCustomPicturesHelp" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableCustomPictures ? 'checked' : '' %><%}else{%><%=(settings.enableCustomPictures == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableCustomPictures">Enabled</label>
+                    <small id="enableCustomPicturesHelp" class="form-text text-muted">(Uses .jpg files placed in './posterr/custom' folder)</small>
+                  </div>
+                </div>
+
+              <div class="form-group">
+                <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Theme Folder</label>
+                <select class="custom-select my-1 mr-sm-2" name="customPictureTheme" id="customPictureTheme">
+                  <% customPicFolders.forEach(function(fld) { %>
+                    <option value="<%=fld%>"><%=fld%></option>>
+                  <% }); %>
+                </select>
+              </div>
+              <script lang='javascript'>
+                    // set pre-selected or saved font
+                    var picTheme = document.getElementById("customPictureTheme");
+                  <%
+                    if(typeof formData !== 'undefined' && errors){%> picTheme.value='<%=formData.customPictureTheme%>' ;<%
+                    }
+                    else{%> picTheme.value='<%=settings.customPictureTheme%>' ;<%
+                    }
+                  %> </script>
+               </div>
+              </div>
+            </div>
+            <hr>
+
+
+
+
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingFive">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                    NOW SCREENING <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableNS" id="enableNS" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableNS ? 'checked' : '' %><%}else{%><%=(settings.enableNS == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableNS">Enabled</label>
+                  </div>
+                </div>
+
+                  <div class="form-group">
+                <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                  <input type="checkbox" class="custom-control-input" name="pinNSSwitch" id="pinNSSwitch" 
+                    value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.pinNSSwitch ? 'checked' : '' %><%}else{%><%=(settings.pinNS == 'true') ? 'checked' : '' %><%}%>>
+                  <label class="custom-control-label" for="pinNSSwitch">Pin Now Screening / Now Playing</label>
+                  <small id="randomThemeHelp" class="form-text text-muted">If something is playing, then hide on-demand and coming soon</small>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                  <input type="checkbox" class="custom-control-input" name="hideUser" id="hideUser" 
+                    value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.hideUser ? 'checked' : '' %><%}else{%><%=(settings.hideUser == 'true') ? 'checked' : '' %><%}%>>
+                  <label class="custom-control-label" for="hideUser">Hide user info</label>
+                  <small id="hideUserHelp" class="form-text text-muted">Hides user information being displayed at bottom of slide</small>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="filterDevices">Filter by device(s)</label>
+                <input type="text" class="form-control" id="filterDevices" name="filterDevices" aria-describedby="filterDevicesHelp"
+                  placeholder="examples -> chromecast,chrome,Roku Ultra - XYZ123456789" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.filterDevices%>"<%}else{%><%=settings.filterDevices%>"<%}%>>
+                  <small id="filterDevicesHelp" class="form-text text-muted">Enter device names to include (Comma seperated and no spaces, except in the name. Leave blank for all devices)</small>
+              </div>
+
+              <div class="form-group">
+                <label for="filterUsers">Filter by user(s)</label>
+                <input type="text" class="form-control" id="filterUsers" name="filterUsers" aria-describedby="filterUsersHelp"
+                  placeholder="examples -> matt,fred,sally@abc.com" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.filterUsers%>"<%}else{%><%=settings.filterUsers%>"<%}%>>
+                  <small id="filterUsersHelp" class="form-text text-muted">Enter user names to include (Comma seperated and no spaces. Leave blank for all users)</small>
+              </div>    
+
+              <div class="form-group">
+                <label for="excludeLibs">Exclude libraries</label>
+                <input type="text" class="form-control" id="excludeLibs" name="excludeLibs" aria-describedby="excludeLibsHelp"
+                  placeholder="examples -> TV Shows,Movies" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.excludeLibs%>"<%}else{%><%=settings.excludeLibs%>"<%}%>>
+                  <small id="excludeLibsHelp" class="form-text text-muted">Enter any libraries to exclude (Comma seperated and no leading or trailing spaces. Leave blank to include all libraries)</small>
+              </div>    
+
+              <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableAwtrix" id="enableAwtrix" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableAwtrix ? 'checked' : '' %><%}else{%><%=(settings.enableAwtrix == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableAwtrix">Enable Awtrix integration </label><a href="https://blueforcer.github.io/awtrix-light/#/" target=”_blank”> (Awtrix docs)</a>
+                    <small id="awtrixIPHelp" class="form-text text-muted">Enable integration of Now Screening titles with devices running Awtrix.</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                <label for="filterUsers">Awtrix URL</label>
+                <input type="text" class="form-control" id="awtrixIP" name="awtrixIP" aria-describedby="awtrixIPHelp"
+                  placeholder="Example -> http://192.168.1.134" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.awtrixIP%>"<%}else{%><%=settings.awtrixIP%>"<%}%>>
+                  <small id="awtrixIPHelp" class="form-text text-muted">Enter the URL for the Awtrix clock</small>
+              </div>   
+
+
+              <h6>Network Boundaries</h6>
+              <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="filterLocal" id="filterLocal" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.filterLocal ? 'checked' : '' %><%}else{%><%=(settings.filterLocal == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="filterLocal">Local Network</label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="filterRemote" id="filterRemote" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.filterRemote ? 'checked' : '' %><%}else{%><%=(settings.filterRemote == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="filterRemote">Remote Networks</label>
+                  </div>
+                </div>
+
+                </div>
+              </div>
+            </div>
+            <hr>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingSix">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                    ON-DEMAND <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableOD" id="enableOD" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableOD ? 'checked' : '' %><%}else{%><%=(settings.enableOD == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableOD">Enabled</label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="plexLibraries">Plex Libraries for On-Demand Titles</label>
+                  <input type="text" class="form-control" id="plexLibraries" name="plexLibraries" aria-describedby="plexLibraries"
+                    placeholder="suggestions -> movies,tv shows,anime" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.plexLibraries%>"<%}else{%><%=settings.onDemandLibraries%>"<%}%>>
+                  <small id="plexLibrariesHelp" class="form-text text-muted">Enter Plex library names to use (comma seperated and no spaces, except in the name)
+                    (Leave blank to disable)</small>
+                </div>
+                <div class="form-group">
+                  <label for="recentlyAddedDays">Recently Added In Last n Days</label>
+                  <input type="text" class="form-control" id="recentlyAddedDays" name="recentlyAddedDays" aria-describedby="recentlyAddedDaysHelp"
+                    placeholder="suggest no more than 45." value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.recentlyAddedDays%>"<%}else{%><%=settings.recentlyAddedDays%>"<%}%>>
+                  <small id="recentlyAddedDaysHelp" class="form-text text-muted">Show recently added titles from
+                    each specified Plex library. <b>'Content rating'</b> and <b>'Genre' <u>are ignored</u> if this is set to a non-zero value.</b></small>
+                </div>
+                <div class="form-group">
+                  <label for="numberOnDemand">Number to Display</label>
+                  <input type="text" class="form-control" id="numberOnDemand" name="numberOnDemand" aria-describedby="numberOnDemandHelp"
+                    placeholder="suggest 5 or 6. (lower numbers perform better)" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.numberOnDemand%>"<%}else{%><%=settings.numberOnDemand%>"<%}%>>
+                  <small id="numberOnDemandHelp" class="form-text text-muted">The number of random titles to display from
+                    each specified Plex library.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="onDemandRefresh">On-demand Refresh Period</label>
+                  <input type="text" class="form-control" id="onDemandRefresh" name="onDemandRefresh" aria-describedby="onDemandRefresh"
+                    placeholder="suggest 30" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.onDemandRefresh%>"<%}else{%><%=settings.onDemandRefresh%>"<%}%>>
+                  <small id="onDemandRefresh" class="form-text text-muted">How often, in minutes, on-demand titles are refreshed (minimum 10 minutes)</small>
+                </div>
+                <div class="form-group">
+                  <label for="genres">Genres</label>
+                  <input type="text" class="form-control" id="genres" name="genres" aria-describedby="genres"
+                    placeholder="genre1,genre2" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.genres%>"<%}else{%><%=settings.genres%>"<%}%>>
+                  <small id="genres" class="form-text text-muted">Filter on-demand/recently added to only show selected genres (not cumulative). Ignored if recently added is non-zero</small>
+                </div>
+                <div class="form-group">
+                  <label for="contentRatings">Hide Ratings</label>
+                  <input type="text" class="form-control" id="contentRatings" name="contentRatings" aria-describedby="contentRatings"
+                    placeholder="r,nc-17,pg-13" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.contentRatings%>"<%}else{%><%=settings.contentRatings%>"<%}%>>
+                  <small id="contentRatings" class="form-text text-muted">Do not show titles with these ratings. (based on agent metadata country in plex) Ignored if recently added is non-zero</small>
+                </div>
+
+                <h6>Hide Banners</h6>
+              <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="odHideTitle" id="odHideTitle" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.odHideTitle ? 'checked' : '' %><%}else{%><%=(settings.odHideTitle == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="odHideTitle">Hide Title</label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="odHideFooter" id="odHideFooter" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.odHideFooter ? 'checked' : '' %><%}else{%><%=(settings.odHideFooter == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="odHideFooter">Hide Footer</label>
+                  </div>
+                </div>
+
+                </div>
+              </div>
+            </div>  
+            <hr>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingSeven">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                    SONARR <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableSonarr" id="enableSonarr" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableSonarr ? 'checked' : '' %><%}else{%><%=(settings.enableSonarr == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableSonarr">Enabled</label>
+                  </div>
+                </div>
+
+              <div class="form-group">
+                <label for="sonarrToken">Sonarr Token</label>
+                <input type="password" class="form-control" id="sonarrToken" name="sonarrToken" aria-describedby="sonarrTokenlHelp"
+                  placeholder="Sonarr API Token`" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.sonarrToken%>"<%}else{%><%=settings.sonarrToken%>"<%}%>>
+                <small id="sonarTokenHelp" class="form-text text-muted">Enter the Sonarr API token. (Leave blank to disable)</small>
+              </div>
+                <div class="form-group">
+                  <label for="sonarrUrl">Sonarr URL</label>
+                  <small id="sonarrInfo" class="form-text text-muted">The following settings allow for comming soon 'TV'
+                    titles to be included.</small>
+                  <input type="text" class="form-control" id="sonarrUrl" name="sonarrUrl" aria-describedby="sonarrUrlHelp"
+                    placeholder="http://n.n.n.n:8989" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.sonarrUrl%>"<%}else{%><%=settings.sonarrURL%>"<%}%>>
+                  <small id="sonarUrlHelp" class="form-text text-muted">Enter the ful URL and port for Sonarr.</small>
+                </div>
+                <div class="form-group">
+                  <label for="sonarrDays">Days ahead</label>
+                  <input type="text" class="form-control" id="sonarrDays" aria-describedby="sonarrDays" name="sonarrDays" placeholder="" 
+                  value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.sonarrDays%>"<%}else{%><%=settings.sonarrCalDays%>"<%}%>>
+                  <small id="sonarUrlHelp" class="form-text text-muted">Enter the days to look ahead in the Sonarr
+                    calendar.
+                    (Use a low number like 2-3 if 'premieres' off, otherwise 30-60)</small>
+                </div>
+
+                <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                  <input type="checkbox" class="custom-control-input" id="premiereSwitch" name="premiereSwitch"
+                  value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.premiereSwitch ? 'checked' : '' %> <%}else{%><%=(settings.sonarrPremieres == 'true') ? 'checked' : '' %><%}%>>
+                  <label class="custom-control-label" for="premiereSwitch">Show premieres</label>
+                  <small id="premiereSwitchHelp" class="form-text text-muted">Only show season premieres.</small>
+                </div>
+
+                  </div>
+              </div>
+            </div>  
+            <hr>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingEight">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                    RADARR <i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
+                <div class="panel-body">
+
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableRadarr" id="enableRadarr" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableRadarr ? 'checked' : '' %><%}else{%><%=(settings.enableRadarr == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableRadarr">Enabled</label>
+                  </div>
+                </div>
+
+              <div class="form-group">
+                <label for="radarrToken">Radarr Token</label>
+                <input type="password" class="form-control" id="radarrToken" name="radarrToken" aria-describedby="radarrTokenHelp"
+                  placeholder="Radarr API Token" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.radarrToken%>"<%}else{%><%=settings.radarrToken%>"<%}%>>
+                <small id="radarrTokenHelp" class="form-text text-muted">Enter the Radarr API token. (Leave blank to disable)</small>
+              </div>
+                <div class="form-group">
+                  <label for="radarrUrl">Radarr URL</label>
+                  <input type="text" class="form-control" id="radarrUrl" name="radarrUrl" aria-describedby="radarrUrlHelp"
+                    placeholder="http://n.n.n.n:7878" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.radarrUrl%>"<%}else{%><%=settings.radarrURL%>"<%}%>>
+                  <small id="radarUrlHelp" class="form-text text-muted">Enter the ful URL and port for Radarr.</small>
+                </div>
+                <div class="form-group">
+                  <label for="radarrDays">Days ahead</label>
+                  <input type="text" class="form-control" id="radarrDays" name="radarrDays" aria-describedby="radarrDays" placeholder="Suggest 90-175"
+                   value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.radarrDays%>"<%}else{%><%=settings.radarrCalDays%>"<%}%>>
+                  <small id="radarrUrlHelp" class="form-text text-muted">Enter the days to look ahead in the Radarr
+                    calendar.</small>
+                </div>
+
+                  </div>
+              </div>
+            </div>  
+            <hr>
+
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingNine">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+                    READARR<i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingNine">
+                <div class="panel-body">
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableReadarr" id="enableReadarr" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableReadarr ? 'checked' : '' %><%}else{%><%=(settings.enableReadarr == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableReadarr">Enabled</label>
+                  </div>
+                </div>
+
+              <div class="form-group">
+                <label for="readarrToken">Readarr Token</label>
+                <input type="password" class="form-control" id="readarrToken" name="readarrToken" aria-describedby="readarrTokenHelp"
+                  placeholder="Readarr API Token" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.readarrToken%>"<%}else{%><%=settings.readarrToken%>"<%}%>>
+                <small id="readarrTokenHelp" class="form-text text-muted">Enter the Readarr API token. (Leave blank to disable)</small>
+              </div>
+                <div class="form-group">
+                  <label for="radarrUrl">Readarr URL</label>
+                  <input type="text" class="form-control" id="readarrUrl" name="readarrUrl" aria-describedby="readarrUrlHelp"
+                    placeholder="http://n.n.n.n:8787" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.readarrUrl%>"<%}else{%><%=settings.readarrURL%>"<%}%>>
+                  <small id="readarUrlHelp" class="form-text text-muted">Enter the ful URL and port for Readarr.</small>
+                </div>
+                <div class="form-group">
+                  <label for="readarrDays">Days ahead</label>
+                  <input type="text" class="form-control" id="readarrDays" name="readarrDays" aria-describedby="readarrDays" placeholder="Suggest 60-90"
+                   value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.readarrDays%>"<%}else{%><%=settings.readarrCalDays%>"<%}%>>
+                  <small id="readarrUrlHelp" class="form-text text-muted">Enter the days to look ahead in the Readarr
+                    calendar.</small>
+                </div>
+
+                  </div>
+              </div>
+            </div>  
+            <hr>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingLinks">
+    <h4 class="panel-title">
+      <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseLinks" aria-expanded="false" aria-controls="collapseLinks">
+        CUSTOM LINKS <i class="accordion_icon fal fa-plus"></i>
+      </a>
+    </h4>
+  </div>
+  <div id="collapseLinks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLinks">
+    <div class="panel-body">
+
+      <div class="form-group">
+      <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+        <input type="checkbox" class="custom-control-input" name="enableLinks" id="enableLinks" 
+          value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableLinks ? 'checked' : '' %><%}else{%><%=(settings.enableLinks == 'true') ? 'checked' : '' %><%}%>>
+        <label class="custom-control-label" for="enableLinks">Enabled</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="links">Links</label>
+      <input type="text" class="form-control" id="links" name="links" aria-describedby="linksHelp"
+        placeholder="http://n.n.n.n;https://n.n.n.n" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.links%>"<%}else{%><%=settings.links%>"<%}%>>
+      <small id="linksHelp" class="form-text text-muted">Enter links separated by ;. (This feature is somewhat experimental. Only links that allow being loaded in iframes will work. If a link doesnt work, try another.)</small>
+    </div>
+
+      </div>
+  </div>
+</div>  
+<hr>
+
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="headingTrivia">
+                <h4 class="panel-title">
+                  <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTrivia" aria-expanded="false" aria-controls="collapseTrivia">
+                    TRIVIA<i class="accordion_icon fal fa-plus"></i>
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseTrivia" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTrivia">
+                <div class="panel-body">
+                  <div class="form-group">
+                  <div class="custom-control custom-control-nolabel custom-switch ml-auto">
+                    <input type="checkbox" class="custom-control-input" name="enableTrivia" id="enableTrivia" 
+                      value="true" <% if(typeof formData !== 'undefined' && errors){%><%=formData.enableTrivia ? 'checked' : '' %><%}else{%><%=(settings.enableTrivia == 'true') ? 'checked' : '' %><%}%>>
+                    <label class="custom-control-label" for="enableTrivia">Enabled</label>
+                  </div>
+                </div>
+
+                <!--<div class="form-group">
+                  <label for="triviaCategories">Trivia categories</label>
+                  <input type="text" class="form-control" id="triviaCategories" name="triviaCategories" aria-describedby="triviaCategoriesHelp"
+                    placeholder="11,12" value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.triviaCategories%>"<%}else{%><%=settings.triviaCategories%>"<%}%>>
+                  <small id="triviaCategoriesHelp" class="form-text text-muted">Select the categories for trivia questions.</small>
+                </div>-->
+                <div class="form-group">
+                  <label for="triviaTimer">Trivia timer</label>
+                  <input type="text" class="form-control" id="triviaTimer" name="triviaTimer" aria-describedby="triviaTimer" placeholder="Suggest 15"
+                   value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.triviaTimer%>"<%}else{%><%=settings.triviaTimer%>"<%}%>>
+                  <small id="triviaTimerHelp" class="form-text text-muted">Enter the number of seconds for the trivia countdown timer.</small>
+                </div>
+                <div class="form-group">
+                  <label for="triviaTimer">Number of questions</label>
+                  <input type="text" class="form-control" id="triviaNumber" name="triviaNumber" aria-describedby="triviaNumber" placeholder="Suggest 3"
+                   value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.triviaNumber%>"<%}else{%><%=settings.triviaNumber%>"<%}%>>
+                  <small id="triviaNumberHelp" class="form-text text-muted">Enter the number of questions for each category to display.</small>
+                </div>
+                <div class="form-group">
+                  <label for="triviaFrequency">Question refresh freqency</label>
+                  <input type="text" class="form-control" id="triviaFrequency" name="triviaFrequency" aria-describedby="triviaFrequency" placeholder="Suggest 300 minutes"
+                   value="<% if(typeof formData !== 'undefined' && errors){%><%=formData.triviaFrequency%>"<%}else{%><%=settings.triviaFrequency%>"<%}%>>
+                  <small id="triviaFrequencyHelp" class="form-text text-muted">How often to get a new set of questions (minutes)</small>
+                </div>
+
+                <label for="exampleFormControlSelect2">Trivia categories</label>
+                <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" 
+          id="dropdownMenu1" data-toggle="dropdown" 
+          aria-haspopup="true" aria-expanded="true">Question cateogries 
+    <i class=""></i>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1" id="x" name="x">
+    <li><label class="categoryTitle"><b>General</b></label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="27">Animals</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="30">Gadgets</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="9">General Knowledge</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="20">Mythology</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="21">Sports</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="28">Vehicles</label></li>
+    <li><label class="categoryTitle"><b>Entertainment</b></label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="25">Art</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="16">Board Games</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="26">Celebrities</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="13">Musicals and Theatres</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="15">Video Games</label></li>
+    <li><label class="categoryTitle"><b>Media</b></label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="31">Anime and Manga</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="10">Books</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="32">Cartoon and Animation</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="29">Comics</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="11">Film</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="12">Music</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="14">Television</label></li>
+    <li><label class="categoryTitle"><b>Science &amp; Technology</b></label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="18">Computers</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="22">Geography</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="23">History</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="19">Mathematics</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="24">Politics</label></li>
+    <li><label><input type="checkbox" name="triviaCategories" value="17">Science and Nature</label></li>
+  </ul> 
+  <small class="form-text text-muted">Select the trivia categories you want to display.</small>
+
+</div>
+
+
+
+<script type="text/javascript">
+  $(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+    $(this).closest("li").toggleClass("active", this.checked);
+  });
+
+  $(document).on('click', '.allow-focus', function (e) {
+    e.stopPropagation();
+  });
+</script>
+
+  <script lang="javascript">
+    // select saved or forms triva categories
+    var formCategories = [];
+    var savedCategories = [];
+    // load posted form data
+    <%if(typeof formData !== 'undefined' && errors){%>
+      formCategories = '<%=formData.triviaCategories%>'.split(',')%>;
+      formCategories.forEach(function(id){
+        $('[name="triviaCategories"]').each( function() {   
+          if ( $(this).val() ==   id ){
+            $(this).attr('checked', true);
+            $(this).closest("li").toggleClass("active", this.checked);
+          }
+          else{
+            if ( $(this).attr('checked') == true){
+              $(this).attr('checked', false);
+            }
+          }
+        });
+      });
+    <%}else{%>
+      // load saved trivia selections
+      savedCategories = '<%=settings.triviaCategories%>'.split(',')%>;
+      savedCategories.forEach(function(id){
+        $('[name="triviaCategories"]').each( function() {   
+          if ( $(this).val() ==   id ){
+            $(this).attr('checked', true);
+            $(this).closest("li").toggleClass("active", this.checked);
+          }
+          else{
+            if ( $(this).attr('checked') == true){
+              $(this).attr('checked', false);
+            }
+          }
+        });
+      });
+    <%}%>
+  </script>
+                
+
+              </div>
+              </div>
+            </div>  
+          </div>
+
+          <hr />
+          <button type="reset" class="btn btn-info" onclick="location.href = '<%=baseUrl%>/settings';">Exit</button>&nbsp;&nbsp; <button type="reset" class="btn btn-info"
+            onclick="location.href = '<%=baseUrl%>/';">Main Page</button>
+            &nbsp;<button type="reset" class="btn btn-success"
+            onclick="window.open('https://github.com/petersem/posterr/wiki/Posterr-Configuration');">Doco</button>
+          <button type="submit" class="btn btn-danger" style="float: right;">Save</button>
+        </form>
+        <% if(message !== undefined && message != ""){%>
+      <p id="rcorners"><%=message%></br>
+      <%}%>
+      </div>
+
+
+                  <!-- About -->
+                  <div class="tab-pane" id="about">
+                    <h5>ABOUT POSTERR</h5>
+                    <p><%="Version: " + version%></p>
+                    <p><b>Support my efforts and continued development.</b></br> <a
+                        href="https://www.paypal.com/paypalme/thanksmp" target="_blank">Buy me a coffee to say
+                        thanks.</a></p>
+                    <hr>
+
+                    <p>
+                      POSTERR was initially born from a desire for me to learn Node. Over time, I decided to
+                      take it from an excercise to being a full product.
+                    </p>
+                    <p>
+                      My goals were simple: </p>
+                    <ul>
+                      <li>Make it open source</li>
+                      <li>Make it free</li>
+                      <li>Make it cross-platform</li>
+                      <li>Make it as good as possible</li>
+                    </ul>
+                    <p>
+                      I'd like to thank everyone for their suggestions and feedback. Keep it coming!
+                    </p>
+                    <P>Matt Petersen (April, 2021)</P>
+                    <hr />
+                    <label class="d-block" style="text-decoration: underline;">Project Details</label>
+                    <p>
+                      <ul>
+                        <li>GitHub repository: <a href="https://github.com/petersem/posterr" target="_blank">Here</a>
+                        </li>
+                        <li>Docker repository: <a href="https://hub.docker.com/repository/docker/petersem/posterr"
+                            target="_blank">Here</a></li>
+                        <li>Discord: <a href="https://discord.gg/TcnEkMEf9J"
+                            target="_blank">Here</a></li>
+                      </ul>
+                    </p>
+                    <label class="d-block" style="text-decoration: underline;">Disclaimer</label>
+                    <p class="small">Posterr is dependant on third party applications and services. Some features may fail temporarily or permenantly if the dependancies are unavailable, or become incompatible for any technical or legal reason. This software comes with no warranty or guarantee of any kind. Images and themes that you download through Posterr may be copyrighted, and are the property of the respective copyright holders.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<!--
+***********************************************************
+* Posterr - Your home media display                       *
+* Developed by Matt Petersen - Brisbane, Australia        *
+***********************************************************
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-control" content="public">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Additional js libs -->
+    <script src="<%=baseUrl%>/js/jquery-3.3.1.slim.min.js"></script>
+    <script src="<%=baseUrl%>/js/bootstrap.min.js"></script>
+
+    <!--- CSS -->
+    <link rel="stylesheet" href="<%=baseUrl%>/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%=baseUrl%>/css/font-awesome.min.css">
+    <link rel="stylesheet" href="<%=baseUrl%>/css/logon-styles.css">
+    <link rel="stylesheet" href="<%=baseUrl%>/css/light.min.css">
+
+    <!-- <script src="/js/script.js"></script> -->
+
+    <title>Posterr - Settings Login</title>
+    <link rel="shortcut icon" type="image/png" href="<%=baseUrl%>/favicons/favicon.ico" />
+    <style>
+div {
+  margin-left: 70px;
+  margin-right: 70px;
+color: whitesmoke;
+}
+    </style>
+</head>
+
+<body>
+
+
+    <br class="container d-flex align-items-center justify-content-center no-content" style="position: fixed; position: 50%,50%">
+        <div style="color: lightgoldenrodyellow;">
+            <h1>Posterr Settings</h1>
+            <p class="lead">Media display software for Plex, Sonarr, Radarr, and Readarr.</p>
+        </div>
+
+        <form method="POST" action="<%=baseUrl%>/logon">
+            <div class="form-group">
+                <label for="password">Enter the password</label>
+                <input type="password" class="form-control" id="password" name="password" aria-describedby="password"
+                    placeholder="Enter a password" value="" style="width: 200px">
+            </div>
+            <div>
+            <button type="submit" class="btn btn-info" >GO</button>
+            <button type="reset" class="btn btn-info" onclick="location.href = '<%=baseUrl%>/';">Return</button>
+            <small id="passwordHelp" class="form-text text-muted">If you have forgetten the password, please
+                review the /config/settings.json file</small>
+            </div>
+        </form>
+    </div>
+
+    <!-- show validation errors -->
+    <% 
+    if(typeof errors !== 'undefined'){
+      // display validation errors
+      errors.forEach(function(e) { %>
+    <p class="alert alert-warning"><%=e.msg %></p>
+    <%});%>
+    <%}%>
+    <script language="javascript">
+        // set focus on password field
+        var pwd = document.getElementById("password");
+        pwd.focus();
+    </script>
+</body>
+
+</html>

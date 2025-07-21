@@ -1,0 +1,652 @@
+<div id="myNav" class="overlay">
+  <%if(globals.hideSettingsLinks !== undefined && globals.hideSettingsLinks == 'true'){ %>
+    <div class="overlay-content">
+  <%}
+  else{%>
+    <div class="overlay-content" onclick="location.href = '<%=baseUrl%>/settings';">
+  <%}%>
+    <!-- <a href="< %=baseUrl%>/settings" class="overlay-link">Zzzzzzz...</a> -->
+  </div>
+</div>
+
+<div id="myCarousel" data-interval="<%=globals.slideDuration%>" data-pause="false" class="carousel slide <%=globals.fadeTransition%> h-100 w-100"
+     data-ride="carousel">
+    <div class="carousel-inner cardHolder h-100 w-100 ">
+    </div>
+</div>
+
+<script language='javascript'>
+
+   // look for space to pause carousel
+  document.addEventListener("keydown", manualKey, false);
+
+
+  function manualKey(event){
+    // check if quiz
+    var quizTimer = $('.timer' + curPlayID);
+    var isTrivia;
+    if(quizTimer.length !== 0 && quizTimer !== null) {
+      isTrivia = true;
+    }
+    else {
+      isTrivia = false;
+    }
+
+    // manage manual key presses for space and left/right arrows - pause and prev/next slides
+    const keyName = event.key;
+    var tagLine = document.getElementById("tagLine" + curPlayID);
+    var myAudio = document.getElementById("audio" + curPlayID);
+    var customPicture = false
+    if(document.getElementById("overlay_text" + curPlayID))
+    {
+      customPicture = true;
+      var pauseLine = document.getElementById("overlay_text" + curPlayID);
+    }
+
+
+    switch (keyName) {
+      case " ":
+        // Spacebar pressed (pause/resume)
+        if(pauseDetect == false && isTrivia !== true){
+          originalTagline = document.getElementById("tagLine" + curPlayID).innerText;
+          tagLine.innerText = "PAUSED - Space to resume";
+          if(customPicture){pauseLine.innerText = "PAUSED - Space to resume"};
+          $('#myCarousel').carousel('pause');
+          pauseDetect = true;
+        }
+        else if(isTrivia !== true) {
+          pauseDetect = false;    
+          tagLine.innerText = originalTagline;
+          if(customPicture){pauseLine.innerText = ""};
+          $('#myCarousel').carousel('cycle');
+        }
+        break;
+      case "ArrowRight":
+        if(pauseDetect == true){
+          pauseDetect = false;    
+          tagLine.innerText = originalTagline;
+          if(customPicture){pauseLine.innerText = ""};
+        }
+        myAudio.volume = 0;
+        $('#myCarousel').carousel('next');
+        break;
+      case "ArrowLeft":
+        if(pauseDetect == true){
+          pauseDetect = false;    
+          tagLine.innerText = originalTagline;
+          if(customPicture){pauseLine.innerText = ""};
+        }
+        myAudio.volume = 0;
+        $('#myCarousel').carousel('prev');
+        break;
+      default:
+        //console.log(keyName);
+        break;
+    }
+  }
+
+
+startInactivityCheck(
+  document.querySelector('#myCarousel'),
+  2000,
+  (element) => element.style.cursor = 'none',
+  (element) => element.style.cursor = null
+);
+
+function startInactivityCheck(element, delay, callbackInactivity, callbackActive) {
+  let timeoutId;
+  
+  setupTimers();
+
+  function setupTimers () {
+    element.addEventListener("mousemove", resetTimer, false);
+    element.addEventListener("mousedown", resetTimer, false);
+    element.addEventListener("keypress", resetTimer, false);
+    element.addEventListener("touchmove", resetTimer, false);
+
+    startTimer();
+  }
+
+  function startTimer() { 
+    timeoutId = setTimeout(() => callbackInactivity(element), delay);
+  }
+
+  function resetTimer() {
+    callbackActive(element);
+    clearTimeout(timeoutId);
+    startTimer();
+  }
+}
+
+  var initialLoadTime = new Date().getTime();
+  var connCheckClock;
+  var connOk = true;
+  var sleeping = false;
+  var counter;
+  var curPlayID = 1;
+  var pauseDetect = false;
+  var originalTagline;
+
+  function openNav() {
+    document.getElementById("myNav").style.width = "100%";
+  }
+
+  function closeNav() {
+    document.getElementById("myNav").style.width = "0%";
+  }
+
+
+  function noConnection() {
+    cardHtml = `<div class="container d-flex align-items-center justify-content-center no-content"><div class="d-flex">
+      <div class="settingsLink">Lost connectivity with Posterr server!</br>Attempting to restore connection..</div></div></div>`
+    $(".cardHolder").html(cardHtml);    
+    $("body").css("background-color","black");
+  }
+
+  function shutdown(){
+    // shutdown slides, audio, and then hide screen
+    if(sleeping !== true){
+      $('#myCarousel').carousel('pause');
+      StopAudio(curPlayID);
+      openNav();
+      sleeping = true;
+    }
+    else{
+      StopAudio(curPlayID);
+    }
+  }
+
+  function restart(){
+    $('#myCarousel').carousel({
+        interval: <%=globals.slideDuration%>
+    });
+
+    $('#myCarousel').carousel('cycle');
+    sleeping = false;
+    closeNav();
+  }
+
+  function connCheck(){
+//console.log('check for connection');
+    const xhr = new XMLHttpRequest();
+   
+    xhr.open('GET', window.location.href + 'conncheck');
+    // set response format
+    xhr.responseType = 'json';
+    xhr.send();
+    // connection failed
+    xhr.onerror = () => {
+      console.log('Conection failed. Trying to restore connection.')
+      connOk = false;
+      noConnection();
+    }
+
+    xhr.onload = () => {
+      // check that there hasn't been rapid a cold restart of posterr that this connection check missed
+      const res = xhr.response;
+      if(res==null && sleeping !== true) noConnection();
+      let serverDate = new Date(res.status);
+      // enable overlay if sleep signalled
+      if(res.sleep=="true") {
+        shutdown();
+      }
+      else{
+        // only restart if coming out of sleep
+        if(sleeping==true){
+          restart();
+        }
+        sleeping = false;
+      }
+      let clientDate = new Date();
+      let dif = clientDate.getTime() - serverDate.getTime();
+
+      let secsDiff = dif / 1000;
+      let Seconds_Between_Dates = Math.abs(secsDiff);
+      //console.log('difference:',Seconds_Between_Dates);
+
+      // if a restart happened between the connection checks, then restart
+      // this is only checked for if there are already slides configured, so should not happen for initial setup
+      if(Seconds_Between_Dates<5){
+        //console.log('unscheduled rapid restart of server. Client refreshing');
+        StopAudio(curPlayID);
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+      }
+
+      // restore connection
+      if(connOk==false){
+        console.log('Connection restored!');
+        connOk=true;
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+      }
+      // connection ok!
+      else{
+       // console.log('connection ok');
+      }
+    }
+  }
+
+  // call posterr api to get currently generated card sets
+  function getCards(){
+    //console.log('getting cards');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', window.location.href + 'getcards');
+
+    // set response format
+    xhr.responseType = 'json';
+    xhr.send();
+
+    xhr.onload = () => {
+      // get JSON response
+  //    console.log('got response');
+      const posterr = xhr.response;
+      if((!posterr == null || posterr.globalPage.cards.length !== 0) && sleeping !== "true") {
+        let cardHtml = "";
+        posterr.globalPage.cards.forEach(card => {
+          cardHtml += card.rendered;
+        });
+
+        $(".cardHolder").html(cardHtml);
+        initialLoad();
+
+        // check if there is only one card showing and if so, schedule a data refresh after the slide duration period has passed.
+        if(posterr.globalPage.cards.length == 1){
+          setTimeout( getCards, posterr.globalPage.slideDuration );
+        }
+      }
+      else {
+        location.reload();
+      }
+    }
+  }
+
+  //get and update the first slide. This is to ensure a clean transition from last to first slide
+  function updateFirstCard(){
+    //console.log('getting cards');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', window.location.href + 'getcards');
+
+    // set response format
+    xhr.responseType = 'json';
+    xhr.send();
+
+    xhr.onload = () => {
+      const posterr = xhr.response;
+      if(!posterr == null || posterr.globalPage.cards.length !== 0) {
+        let cardHtml = "";
+        cardHtml = posterr.globalPage.cards[0].rendered.replace("item active","item");
+        $("#1").html(cardHtml);
+      }
+    }
+  }
+
+  function aud_fadeIn(myAudio) {
+    var timer
+    if (myAudio.volume < 1) {
+	    // console.log('fading in: ', myAudio.volume);
+		  if(myAudio.volume > 0.995) {
+		    myAudio.volume = 1;
+		  }
+		  else{
+		    myAudio.volume += 0.003;
+		  }
+      timer = setTimeout(aud_fadeIn,5 ,myAudio);
+    }
+	  else{
+	    // console.log('full volume');
+	  }
+  };
+
+  function aud_fadeOut(id) {
+    var timer
+    var myAudio = document.getElementById("audio" + id);
+    if (myAudio.volume > 0) {
+	    // console.log('fading out');
+		  if(myAudio.volume < 0.005) {
+			  myAudio.volume = 0;
+      }
+		  else{
+			  myAudio.volume -= 0.005;
+		  }
+		  timer = setTimeout(aud_fadeOut,5,id);
+    }
+  	else{
+	  	myAudio.pause();
+	    // console.log('Stopped');
+	  }
+  };
+
+    function aud_fastFadeOut(id) {
+    var timer
+    var myAudio = document.getElementById("audio" + id);
+    if (myAudio.volume > 0) {
+	    // console.log('fading out');
+		  if(myAudio.volume < 0.005) {
+			  myAudio.volume = 0;
+      }
+		  else{
+			  myAudio.volume -= 0.02;
+		  }
+		  timer = setTimeout(aud_fadeOut,5,id);
+    }
+  	else{
+	  	myAudio.pause();
+	    // console.log('Stopped');
+	  }
+  };
+
+  // apply styles to cards and manage audio
+  function initialLoad() {
+    <%if(globals.hideSettingsLinks !== undefined && globals.hideSettingsLinks == 'true'){ 
+      // do nothing
+    }
+    else{%>
+      // make banner link to settings
+      $(".bannerBigText").click(function() {
+        window.location = "<%=baseUrl%>/settings"; 
+        return false;
+      });
+      // if full screen, then make poster the link
+      $(".poster").click(function() {
+        window.location = "<%=baseUrl%>/settings"; 
+        return false;
+      });
+    <%}%>
+
+    //resize for initial page load
+    $('.myDiv').css({'height': (($(window).height())) + 'px' });
+    StopAllAudio();
+    
+    //trigger initial audio play if present
+    if (document.getElementById("audio1")) {
+      var x = document.getElementById("audio1");
+      // set volume to 0 and position 1 second in
+      x.volume = 0;
+      x.currentTime = 0;
+      x.play().catch(e => {
+        // ignore promise errors when paused during play
+        //console.warn(e);
+      });
+
+      // fade in theme
+      aud_fadeIn(x);
+
+      // check if trivia slide and if so, pause carousel and start timer
+      isQuiz(1);
+    }
+
+    // check if marquee is needed
+    var marquee = document.getElementById("marquee1");
+    var tagLine = document.getElementById("tagLine1");
+    if(tagLine !== null){
+      if(tagLine.scrollHeight > tagLine.clientHeight || tagLine.scrollWidth > tagLine.clientWidth){
+        marquee.start();
+      }
+      else{
+        marquee.stop();
+      }
+    }
+
+    Resize(1);
+  }
+
+  $(function () {
+    // initial load of cards and connection check timer every 5 seconds
+    setInterval(connCheck,5000);
+    getCards();
+  });
+
+  async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // generic sleep function
+  async function waitforload(delay, id) {
+    await sleep(delay);
+
+    // resize banner and progress bar based upon poster size
+    Resize(id);
+  }
+
+  // Calculate width and placement of progress bar
+  function Resize(id) {
+    // assign vars and get middle panel dimensions
+    var midHeight = window.innerHeight * .84;
+    var midWidth = window.innerWidth;
+    var posterHeight;
+    var posterWidth;
+    var ar = parseFloat($('#poster' + id + 'AR').text());
+    var progressOffset;
+
+    // Calculate poster width for progress indicator and top offset position
+    switch (ar) {
+      case 1: // album art
+        if(midWidth >= midHeight){
+          posterHeight = midHeight;
+          posterWidth = midHeight;
+          progressOffset = 0;
+        }
+        else {
+          posterHeight = midWidth;
+          posterWidth = midWidth;
+          progressOffset = (midHeight - posterHeight) / 2;
+        }
+        break;
+      case 1.47: // Most movie / tv posters
+        posterHeight = midHeight;
+        posterWidth = midHeight / ar;
+        progressOffset = 0;
+        break;
+      default: // default to less used movie/tv poster size (often 1.5, but 1.47 still ok to use)
+        posterHeight = midHeight;
+        posterWidth = midHeight / ar;
+        progressOffset = 0;
+        break;
+    }
+
+    if (posterWidth > 0) {
+      $('.quiz').width(posterWidth * .90);
+      if ($('#progress' + id).hasClass('hidden')) {
+      } else {
+        $('#progress' + id).css({
+          'width': posterWidth + 'px',
+          'position': 'relative',
+          'top': progressOffset + 'px'
+        });
+      }
+    }
+  }
+
+  // resize when window resizes
+  $(window).bind('resize', function () {
+    if(window.innerHeight < 320) {
+      $('.banners').css({
+        'background-color': 'red'
+      })
+    }
+    else {
+      $('.banners').css({
+        'background-color': '#18180d'
+      })
+      StopAudio(curPlayID);
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
+  });
+
+  // reset answer slides
+  $('#myCarousel').on('slide.bs.carousel', function (ex) {
+    $('.theAnswer').removeClass("answer"); 
+    $('.time').addClass('hidden');
+    $('.time').removeClass('timeR');
+    $('.time').removeClass('timeY');
+    $('.time').addClass('timeG');
+    clearTimeout(counter);
+  })
+
+  function isQuiz(id){
+    // check if trivia slide and if so, pause carousel and start timer
+    var quizTimer = $('.timer' + id);
+    if(quizTimer.length !== 0 && quizTimer !== null) {
+      // pause carousel
+      $('#myCarousel').carousel('pause');
+      // start timer
+      var timeText = document.querySelector(".time_left_txt" + id);
+      var timeCount = document.querySelector(".timer_sec" + id);
+      var timeValue;
+
+      if('<%=quizTime%>'.length > 0){
+        timeValue = <%=quizTime%>;
+      }
+      else{
+        // default if comms issue where value didnt pass.
+        timeValue = 15;
+      }
+      startTimer(timeValue, timeCount, timeText, id)
+    }
+  }
+
+  // pause carouselwhilst any videos are playing
+  // [TODO!!! - ]
+  $('#myCarousel').on('slid.bs.carousel', function (ev) {
+    StopAudio(curPlayID);
+    
+    // ensure carousel active if manually slid via touch
+    $('#myCarousel').carousel('cycle');
+
+    var id = ev.relatedTarget.id;
+    if(id==1) {
+      curPlayID = 1;
+      getCards();
+    }
+
+    curPlayID = id;
+
+    if (document.getElementById("audio" + id)) {
+      var x = document.getElementById("audio" + id);
+      x.volume = 0;
+      x.currentTime = 1;
+      x.play().catch(e => {
+        // ignore promise errors when paused during play
+      });
+
+      // fade in theme
+      aud_fadeIn(x);
+
+    }
+
+
+
+    // check if trivia slide and if so, pause carousel and start timer
+    isQuiz(id);
+
+    // check if marquee is needed
+    var marquee = document.getElementById("marquee" + id);
+    var tagLine = document.getElementById("tagLine" + id);  
+    if(tagLine !== null){
+      if(tagLine.scrollHeight > tagLine.clientHeight || tagLine.scrollWidth > tagLine.clientWidth){
+        marquee.start();
+      }
+      else{
+        marquee.stop();
+      }
+    }
+
+    // resize everything after move to new slide
+    waitforload(0, id);
+
+    // if slide to last card, update the first to ensure smooth(er) transition
+    //console.log(id, $('.carousel-item').length);
+    if(id==$('.carousel-item').length){
+      updateFirstCard();
+    }
+
+    /*         if (substr(id, 3).toLower() == 'vid') {
+              console.log('pausing carousel and starting video');
+              setTimeout(function () {
+                $('#myCarousel').carousel('pause');
+              }, 1)
+              player.playVideo();
+            } */
+  });
+
+  function startTimer(time, timeCount, timeText, id){
+    clearTimeout(counter);
+    counter = setInterval(timer, 1000);
+    var duration = time;
+    function timer(){
+        timeCount.textContent = time; //changing the value of timeCount with time value
+        time--; //decrement the time value
+        if(time < 9){ //if timer is less than 9
+            let addZero = timeCount.textContent; 
+            timeCount.textContent = "0" + addZero; //add a 0 before time value
+        }
+
+        $('.time').removeClass('hidden');
+        // set countdown timer colour
+        if(time >= Math.round(duration * .66)){
+          $('.time').removeClass('timeG');
+          $('.time').removeClass('timeY');
+          $('.time').removeClass('timeR');
+          $('.time').addClass('timeG');
+        }
+        else{
+          if(time >= Math.round(duration * .33)){
+            $('.time').removeClass('timeG');
+            $('.time').removeClass('timeY');
+            $('.time').removeClass('timeR');
+            $('.time').addClass('timeY');
+          }
+          else{
+            if(time < Math.round(duration * .33)){
+              $('.time').removeClass('timeG');
+              $('.time').removeClass('timeY');
+              $('.time').removeClass('timeR');
+              $('.time').addClass('timeR');
+            }
+          }
+        }
+
+        if(time < 0){ //if timer is less than 0
+            clearInterval(counter); //clear counter
+            // resume
+            timeText.textContent = "Time's up!"; //change the time text to time off
+            $('.theAnswer').addClass("answer");
+            // wait a further 3 seconds and then reset the carousel
+            setTimeout(() => {
+              $('#myCarousel').carousel('cycle');
+              $('#myCarousel').carousel('next');
+            },3000);
+        }
+    }
+  }
+
+  function StopAudio(id) {
+    //$('audio').each(function (id) {
+      try {
+        aud_fadeOut(id);
+      } catch (err) {
+        //console.warn(err);
+      }
+    //});
+  }
+
+  function StopAllAudio() {
+    // $('audio').each(function (id) {
+      try {
+        var audElement = document.getElementById("audio" + id);
+        aud_fadeOut(id);
+        // this.pause(); // Stop playing
+        // this.currentme = 0; // Reset time
+      } catch (err) {
+        //console.warn(err);
+      }
+    // });
+  }
+
+  //  });
+</script>
