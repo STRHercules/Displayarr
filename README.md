@@ -1,12 +1,9 @@
 # Posterr
 ## Media display software for Plex, Sonarr, Radarr, and Readarr. (Just like the display screens in movie theatre foyers)
 
-![Docker Pulls](https://img.shields.io/docker/pulls/petersem/posterr) 
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/petersem/posterr/latest?logo=docker) 
 ![GitHub Stars](https://img.shields.io/github/stars/petersem/posterr?style=flat)
 ![Version](https://img.shields.io/github/package-json/v/petersem/posterr?logoColor=blue)
 ![GitHub last commit](https://img.shields.io/github/last-commit/petersem/posterr)
-![Platforms](https://img.shields.io/badge/platform-docker-blue)
 [![User Guide](https://img.shields.io/badge/user_guide-wiki-informational?logo=github)](https://github.com/petersem/posterr/wiki/Posterr-Configuration)
 
 ![Slides](https://github.com/petersem/posterr/blob/master/doco/posterr.jpg?raw=true)
@@ -55,56 +52,13 @@
 
 ## Installation
 Installation details are as follows:
-### <ins>Docker Compose (X86, ARM64)</ins>
-Create the following directories in your docker folder:
- - ./docker/posterr
- - ./docker/posterr/config
- - ./docker/posterr/custom
+### Bare-metal (Windows)
+1. Install [Node.js](https://nodejs.org/) (v16 or higher).
+2. Clone or download this repository.
+3. Run `npm install` in the project folder.
+4. Start Posterr with `npm start` or `node index.js`.
+5. Open <http://localhost:3000> in your browser.
 
-```ya
-version: '2.4'
-
-services:
-  posterr:
-    image: petersem/posterr
-    container_name: posterr
-    environment:
-      TZ: Australia/Brisbane
-      BASEPATH: ""
-    volumes:
-      - ./docker/posterr/config:/usr/src/app/config
-      - ./docker/posterr/custom:/usr/src/app/public/custom
-    ports:
-      - 9876:3000
-    restart: unless-stopped
-```
-### <ins>Docker CLI (X86, ARM64)</ins>
-Create the following directories in your docker folder:
- - ./docker/posterr
- - ./docker/posterr/config
- - ./docker/posterr/custom
-
-```
-docker run -d --name posterr \
--p 9876:3000 \
--v ~/docker/posterr/config:/usr/src/app/config \
--v ~/docker/posterr/custom:/usr/src/app/public/custom \
--e TZ=Australia/Brisbane \
---restart=always \
-petersem/posterr
-```
-
-#### Details
-|Option|Details|
-|--|--|
-|TZ|Your local timezone. Go to [wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) and use the `TZ Database Name` value.|
-|/docker/posterr/config|This is required to save your Posterr settings|
-|/docker/posterr/custom|This is required for custom pictures (and other custom media in the future)|
-|Ports|Change first part to a different port if needed. e.g. 9876:3000|
-|BASEPATH|_"/path"_ Use this for reverse proxy setups which require a base path value. **This line can be left out, or value left blank** if you dont use alternate paths. |
-
-### <ins>Unraid</ins>
- - Use the Posterr template in community apps. (Being replaced with new version)
 
 ---
 ## CEC Control script installation **(rPi only)**
@@ -113,8 +67,7 @@ petersem/posterr
 ---
 ## Updates
  - From v1.10.1, there will be a notice at the top of the settings screen informing you if you are running an old version. 
- - Use containrr/watchtower to auto-update Posterr in Docker environments
- - Update in the usual way for Unraid
+- Download the latest release from GitHub to update manually.
 
 ---
 ## Setup
@@ -135,12 +88,12 @@ Get to the settings page in a number of ways:
 
 ---
 ## Technical Features
- - Built in Node JS, and packaged as a Docker image. (included image health check)
+ - Built in Node.js and runs directly on most systems.
  - Direct binary files also provided for MacOS, Linux, and Windows.
  - Low resource usage. Memory: 20-35mb, Diskspace: ~75mb, CPU: < 1% (running on a Synology NAS with a Celeron processor)
  - Checks for updates in Now Screening / Playing every 10 seconds (Will not display updates until browser refreshed or all slides cycled through)
  - Browser-based, so can run the app on one machine and a browser on another.
- - Browser connectivity checks and auto-reconnect when the Posterr app restarts. (eg During container updates) 
+ - Browser connectivity checks and auto-reconnect when the Posterr app restarts. (eg During restarts) 
  - Supports screen resolution heights from 320 pixels to around 3500 pixels. 
  - Supports reverse proxy setup for wildcard dns or alternate base path.
  - Built-in recovery features should the Poster app, or Plex, go offline.
